@@ -74,5 +74,30 @@ def traverser(route, branch, payload):
                     new_resource["content"] = xml_string
                     payload["resources"].append(new_resource)
 
-    
+## This function opens a given configuration yml and returns it as an iterable dictionary.
 
+def yaml_parser(yml):
+    with open(yml) as stream:
+        try:
+            config_yaml = (yaml.load(stream))
+            return config_yaml
+        except yaml.YAMLError as exc:
+            print(exc)
+            
+##This function determines the method that we're using depending on the positional argument.
+
+def set_method(method, hook, tag, id):
+    if method == "run-all":
+        return hook + '/tests/run-all'
+    elif method == "run-by-tag":
+        if tag:
+            return hook + '/tests/tag/' + tag + "/run"
+        else:
+            print("Run by tag requires a tag (-t)")
+            sys.exit(1)
+    elif method == "run-by-id":
+        if id:
+            return hook + '/tests/' + id + "/run"
+        else:
+            print("Run by ID requires an ID (-i)")
+            sys.exit(1)

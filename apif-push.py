@@ -4,7 +4,7 @@ import os.path
 import json
 import yaml
 import sys
-from functions import payload_builder, get_token, traverser
+from functions import payload_builder, get_token, traverser, yaml_parser
 
 push_parser = argparse.ArgumentParser(description='Push Test to APIF Platform')
 push_parser.add_argument('method', action="store", choices=['push'], help='This command executes a push to APIF')
@@ -49,12 +49,8 @@ if args.path:
         payload_builder(path, branch, payload)
 
 if args.config:
-    with open(os.path.join(args.config)) as stream:
-        try:
-            config_yaml = (yaml.load(stream))
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    yaml_parser(os.path.join(args.config))
+       
 if args.recursive:
     for recursion in args.recursive:
         traverser(recursion, branch, payload)

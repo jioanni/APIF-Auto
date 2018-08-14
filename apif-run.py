@@ -4,7 +4,7 @@ import os.path
 import json
 import yaml
 import sys
-from functions import get_token
+from functions import get_token, yaml_parser, set_method
 
 pull_parser = argparse.ArgumentParser(description='APIF CLI Tool.')
 pull_parser.add_argument('method', action="store", type=str, choices=['run-all', 'run-by-id', 'run-by-tag'], help="this is the type of run that you'll be performing.")
@@ -40,19 +40,11 @@ else:
     config_key = args.hook
 
 if args.config:
-    with open(os.path.join(args.config)) as stream:
-        try:
-            config_yaml = (yaml.load(stream))
-        except yaml.YAMLError as exc:
-            print(exc)
+    config_yaml = yaml_parser(os.path.join(args.config))
 
 if config_key:
     if not args.config:
-        with open(os.path.join('./config.yml')) as stream:
-            try:
-                config_yaml = (yaml.load(stream))
-            except yaml.YAMLError as exc:
-                print(exc)
+        config_yaml = yaml_parser(os.path.join('./config.yml'))
     for hook in config_yaml['hooks']:
         key = hook['key']
         if key == config_key:
@@ -65,20 +57,7 @@ if config_key:
 if args.credentials:
     auth_token = get_token(args.credentials, web_hook)
 
-if args.method == "run-all":
-    web_hook = web_hook + '/tests/run-all'
-elif args.method == "run-by-tag":
-    if args.tag:
-        web_hook = web_hook + '/tests/tag/' + args.tag + "/run"
-    else:
-        print("Run by tag requires a tag (-t)")
-        sys.exit(1)
-elif args.method == "run-by-id":
-    if args.id:
-        web_hook = web_hook + '/tests/' + args.id + "/run"
-    else:
-        print("Run by ID requires an ID (-i)")
-        sys.exit(1)
+web_hook = set_method(args.method, web_hook, args.tag, args.id)
 
 route_list = []
 
