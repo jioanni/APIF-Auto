@@ -77,6 +77,8 @@ def traverser(route, branch, payload):
                     except ET.ParseError as exc:
                             print(exc, "This XML document is invalid.")
 
+# This is the function that handles the boolean case for the format tag.
+
 def bool_return(json):
     if type(json) is list:
         for result in json:
@@ -89,6 +91,8 @@ def bool_return(json):
             return False
         else:
             return True
+
+# This is our request generator/execution function for apif-run
 
 def run_request_executor(webhook, auth_token, params, sync, format, output):
     headers = {}
@@ -116,6 +120,8 @@ def run_request_executor(webhook, auth_token, params, sync, format, output):
             print("APIF: " +str(req.status_code)+ " error")
     return req
 
+# This is our request generator/execution function for apif-push
+
 def push_request_executor(webhook, auth_token, payload):
     headers = {}
     if auth_token:
@@ -125,3 +131,4 @@ def push_request_executor(webhook, auth_token, payload):
         print("APIF: OK")
     else:
         print("APIF: " + str(req.status_code) + " error")
+    return req
